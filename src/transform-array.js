@@ -4,30 +4,23 @@ module.exports = function transform( arr )
 {
     if(!Array.isArray(arr)) throw new Error ('THROW');
     
-    let arrCopy = arr;
-
-    for (let i = 0; i < arr.length; i++) {
-      if(arrCopy[i + 1] != undefined )
-      {
-        if(arrCopy[i] == '--discard-next') 
-        {
-          delete arrCopy[i];
-          delete arrCopy[i + 1];
-        }
-        if(arrCopy[i] == '--double-next') arrCopy[i] = arrCopy[i + 1];
+    let resultArr = arr.slice();
+    let length = arr.length
+    
+    for (let i = 0; i < length; i++) 
+    {
+      if (resultArr[i] == "--discard-next") 
+      { 
+        if(typeof(resultArr[i + 1]) != "undefined"){ delete resultArr[i]; delete resultArr[i + 1]; }
+        else { delete resultArr[i]; } 
       }
-      if(arrCopy[i - 1] != undefined)
-      {
-        if(arrCopy[i] == '--discard-prev') arrCopy.splice(i - 1, 2);
-        if(arrCopy[i] == '--double-prev') arrCopy[i] = arrCopy[i - 1];
+      if (resultArr[i] == "--discard-prev") 
+      { 
+        if(typeof(resultArr[i - 1]) != "undefined"){ delete resultArr[i - 1]; delete resultArr[i]; }
+        else { delete resultArr[i]; } 
       }
-      if((arrCopy[i + 1] == undefined || arrCopy[i - 1] == undefined) &&
-         (arrCopy[i] == '--discard-next' || arrCopy[i] == '--double-next' ||
-          arrCopy[i] == '--discard-prev' || arrCopy[i] == '--double-prev' ))
-          {
-            delete arrCopy[i];
-          }
+      if (resultArr[i] == "--double-next") { typeof(resultArr[i + 1]) != "undefined" ? resultArr[i] = resultArr[i + 1] : delete resultArr[i]; }
+      if (resultArr[i] == "--double-prev") { typeof(resultArr[i - 1]) != "undefined" ? resultArr[i] = resultArr[i - 1] : delete resultArr[i]; }
     }
-
-    return arrCopy.filter(Boolean);
+    return resultArr.filter(n => typeof(n) != "undefined");
 };
